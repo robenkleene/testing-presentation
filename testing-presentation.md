@@ -1,0 +1,156 @@
+## Testing Apps That Update
+
+What's special about testing news apps?
+
+1. News apps need to update.
+2. Testing updates is hard.
+
+---
+
+## Functional vs. OOP
+
+Why is testing updates hard?
+
+> **"Imperative shell, functional core"**
+-- *Gary Bernhardt, Boundaries, 2012*
+
+* Functional means the same arguments generates the same result.
+* Unlike Object-Orientated Programming where methods can access objects state (e.g., through properties).
+
+
+---
+
+## Testing State
+
+Testing updates means testing state, so:
+
+1. Your surface area for bugs is enormous.
+2. Your tests will be complicated.
+
+---
+
+## Our Testing Techniques
+
+How we test updates in the Wall Street Journal for iOS.
+
+---
+
+## The Basic Building Block
+
+* Copy test data into the test bundle as a build phase.
+* Create a simple helper function to access the test data.
+
+``` swift
+extension XCTestCase {
+    public func fileURLForTestData(withPathComponent pathComponent: String) -> URL {
+        let bundleURL = Bundle(for: self).bundleURL
+        let fileURL = bundleURL.appendingPathComponent("TestData").appendingPathComponent(pathComponent)
+        return fileURL
+    }
+}
+
+class ManifestTests: XCTestCase {
+	let testDataManifestNoEntryPathComponent = "manifestNoEntry.json"
+	fileURLForTestData(withFilename: testDataManifestNoEntryPathComponent)
+}
+```
+
+---
+
+## More Sophisticated Test Cases
+
+Build up to more sophisticated test cases by subclassing:
+
+``` swift
+class MockFilesContainerTestCase: XCTestCase { }
+class MockCatalogUpdaterTestCase: FilesContainerTestCase { }
+class MockBarflyTestCase: MockCatalogUpdaterTestCase { }
+```
+
+Note these are postfixed with `TestCase` not `Tests`. Tests use:
+
+``` swift
+class CatalogUpdaterTests: MockCatalogUpdaterTestCase { }
+```
+
+---
+
+## High-Level Test Cases
+
+``` swift
+class BarflyCatalogUpdateTestCase: TestDataFilesContainerTestCase {
+	var barfly: MockBarfly!
+	func setUp() {
+		// Setup `MockBarfly` dependencies
+		barfly = MockBarfly(...)
+	}
+
+	func updateCatalog() -> Catalog {
+		var updatedCatalog: Catalog!
+		let updateCatalogExpectation = expectation(description: "Update catalog")
+		updateCatalogWithCompletion { (error, catalog) -> Void in
+			updatedCatalog = catalog
+			updateCatalogExpectation.fulfill()
+		}
+		waitForExpectations(timeout: testTimeout, handler: nil)
+		return updatedCatalog
+	}
+}
+```
+---
+
+## An Example Tests
+
+1. Use the before and after catalogs.
+2. Test that callbacks fire.
+
+``` swift
+class ContainerResultsControllerTests: BarflyCatalogUpdateTestCase {
+	let firstCatalog = loadCatalog()
+	let updatedCatalog = updateCatalog()
+	XCTAssertTrue(containerResultsControllerDelegate.delegateWasInformed)
+	XCTAssertTrue(type(of: self).doContainers(containerResultsController.availableContainers(), 
+								 matchContainers: firstCatalog.containers)))
+
+	_ = containerResultsController.applyUpdate()
+	XCTAssertTrue(type(of: self).doContainers(containerResultsController.availableContainers(), 
+	                             matchContainers: updatedCatalog.containers)))
+}
+```
+
+---
+
+## Testing Across Apps & Frameworks
+
+Create "Testers" to share the same testing infrastructure across apps and frameworks.
+
+```
+Barfly Targets                           WSJ Targets
+
+* Barfly                                 * WSJ
+* BarflyTester								* Imports Barfly
+	* Imports XCTest					 * WSJ Tests
+* BarflyTests								* Imports XCTest (implicately)
+	* Imports Barfly and BarflyTester		 * Imports Barfly and BarflyTester
+```
+
+This way `WSJ Tests` can subclass `BarflyCatalogUpdateTestCase` and call `updateCatalog()`.
+
+---
+
+## Tricks & Gotchas
+
+* Mocked all network IO, using `HTTPStubs`.
+* Also mocked all disk IO (disk IO is slow, especially with a large number of content files). 
+	* Mocked our lowest-level file system classes to wrap the `TestData` directories in the test bundle.
+
+If we did it again, I'd use that same technique for network IO instead of `HTTPStubs` because it was more reliable (no swizzling).
+
+---
+
+## That's All
+
+*Thanks for listening!*
+
+Roben Kleene
+user@example.com
