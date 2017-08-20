@@ -161,13 +161,94 @@ ClearAsyncIntroducer.whoIsIt(announcer: "Taylor Swift", name: "Poppy")
 
 ---
 
-## Why does functional programming help us write tests?
+To facilitate testing, write as much of your program as possible in a functional style.
 
 > **"Imperative shell, functional core"**
 -- *Gary Bernhardt, Boundaries, 2012*
 
 ---
 
+# Composition
+
+* "Composition over inheritance"
+* [Object composition - Wikipedia](https://en.wikipedia.org/wiki/Object_composition): "Combine simple objects or data types into more complex ones"
+* For example, instead of a `UIViewController` downloading and parsing an API call itself, it might have a `TweetGetter` that performs that work. The `TweetGetter` might itself have an `APICaller` and a `ResponseParser`.
+
+---
+
+Without composition
+
+``` swift
+class AllInOneTweetListViewController: UIViewController {
+    let url = URL(string: "https://api.twitter.com/1.1/search/tweets.json")!
+
+    override func viewDidLoad() {
+        getTweets(at: url) { tweets in
+            // Display the tweets
+        }
+    }
+    
+    func getTweets(at url: URL, completion: ([Tweet]) -> ()) {
+        downloadTweets(at: url) { json in
+            parseTweets(from: json) { tweets in
+                completion(tweets)
+            }
+        }
+    }
+    
+    func downloadTweets(at url: URL, completion: (String) -> ()) {
+        // ...
+    }
+
+    func parseTweets(from json: String, completion: ([Tweet]) -> ()) {
+        // ...
+    }
+}
+```
+
+---
+
+With composition
+
+``` swift
+class ComposedTweetListViewController: UIViewController {
+    let url = URL(string: "https://api.twitter.com/1.1/search/tweets.json")!
+    let tweetGetter = TweetGetter()
+
+    override func viewDidLoad() {
+        tweetGetter.getTweets(at: url) { tweets in
+            // Display the tweets
+        }
+    }
+}
+
+class TweetGetter {
+    let apiCaller = APICaller()
+    let responseParser = ResponseParser()
+
+    func getTweets(at url: URL, completion: ([Tweet]) -> ()) {
+        apiCaller.downloadTweets(at: url) { json in
+            responseParser.parseTweets(from: json) { tweets in
+                completion(tweets)
+            }
+        }
+    }
+}
+
+class APICaller {
+    func downloadTweets(at url: URL, completion: (String) -> ()) {
+        // ...
+    }
+}
+
+class ResponseParser {
+    func parseTweets(from json: String, completion: ([Tweet]) -> ()) {
+        // ...
+    }
+}
+```
+
+---
 ## Testing State
 
 Testing updates means testing state, so:
@@ -301,4 +382,3 @@ If we did it again, I'd use that same technique for network IO instead of `HTTPS
 *Thanks for listening!*
 
 Roben Kleene
-user@example.com

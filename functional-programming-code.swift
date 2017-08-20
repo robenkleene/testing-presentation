@@ -1,6 +1,8 @@
 import Foundation
 
-// # Simple Introducer
+// # Functional Programming
+
+// ## Simple Introducer
 
 // Class
 class SimpleIntroducer {
@@ -16,7 +18,7 @@ func whoIsIt(_ name: String) -> String {
 }
 assert("It's Poppy" == whoIsIt("Poppy"))
 
-// # Less Simple Introducer
+// ## Less Simple Introducer
 
 // Class
 class LessSimpleIntroducer {
@@ -37,7 +39,7 @@ assert("Kanye West says \"It's Poppy\"" == whoIsIt(announcer: "Kanye West",
                                                    name: "Poppy"))
 
 
-// # Confusing Async Introducer
+// ## Confusing Async Introducer
 
 let semaphore = DispatchSemaphore(value: 0)
 class ConfusingAsyncIntroducer {
@@ -67,7 +69,7 @@ confusing.announcer = "Kanye West"
 semaphore.wait()
 // Kanye West says "It's Poppy"
 
-// # Clear Async Introducer
+// ## Clear Async Introducer
 
 class ClearAsyncIntroducer {
     class func whoIsIt(announcer: String, name: String) {
