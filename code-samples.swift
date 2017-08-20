@@ -37,47 +37,50 @@ class LessSimpleIntroducer {
     }
 }
 let lessSimpleIntroducer = LessSimpleIntroducer()
-lessSimpleIntroducer.announcer = "Kanye West"
-assert("Kanye West says \"It's Poppy\"" == lessSimpleIntroducer.whoIsIt("Poppy"))
+lessSimpleIntroducer.announcer = "Beyonce"
+assert("Beyonce says \"It's Poppy\"" == lessSimpleIntroducer.whoIsIt("Poppy"))
 
-class SafeIntroducer {
-    var announcer = "Taylor Swift"
-    class func whoIsIt(_ name: String) -> String {
-        return "It's \(name)"
-    }
-}
-
-// Interface
-//class LessSimpleIntroducer {
-//    var announcer: String
-//    class func whoIsIt(_ name: String) -> String
-//}
-
-_ = SafeIntroducer.whoIsIt("Poppy")
+// # Confusing Async Introducer
 
 let semaphore = DispatchSemaphore(value: 0)
 
-class ICanHazDangerousProperty {
+class ConfusingAsyncIntroducer {
     var announcer = "Taylor Swift"
-    func announce() {
+    var objectIdentifier: Any?
+    var objectExplainer: Any?
+    func whoIsIt(_ name: String) {
         DispatchQueue.global().async {
-            print("\(self.announcer) says \"Your ten year old memes are lame.\"")
+            print("\(self.announcer) says \"It's \(name)\"")
             semaphore.signal()
         }
     }
 }
 
-// Interface
-//class ICanHazDangerousProperty {
-//    var accouncer: String
-//    func announce()
-//}
+let confusing = ConfusingAsyncIntroducer()
 
-let dangerous = ICanHazDangerousProperty()
-dangerous.announcer = "Beyonce"
-dangerous.announce()
+// This call is straight-forward
+confusing.announcer = "Beyonce"
+confusing.whoIsIt("Poppy")
 semaphore.wait()
-dangerous.announcer = "Taylor Swift"
-dangerous.announce()
-dangerous.announcer = "Kanye West"
+// Beyonce says "It's Poppy"
+
+// But this one is unexpected!
+confusing.announcer = "Taylor Swift"
+confusing.whoIsIt("Poppy")
+confusing.announcer = "Kanye West"
 semaphore.wait()
+// Kanye West says "It's Poppy"
+
+// # Clear Async Introducer
+
+class ClearAsyncIntroducer {
+    var objectIdentifier: Any?
+    var objectExplainer: Any?
+    class func whoIsIt(announcer: String, name: String) {
+        DispatchQueue.global().async {
+            print("\(announcer) says \"It's \(name)\"")
+            semaphore.signal()
+        }
+    }
+}
+ClearAsyncIntroducer.whoIsIt(announcer: "Taylor Swift", name: "Poppy")

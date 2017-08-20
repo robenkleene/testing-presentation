@@ -75,7 +75,8 @@ class LessSimpleIntroducer {
     func whoIsIt(_ name: String) -> String 
 }
 
-func whoIsIt(announcer: String, name: String) -> String
+func whoIsIt(announcer: String, 
+             name: String) -> String
 ```
 
 ## More Complex Interfaces
@@ -90,12 +91,56 @@ class MoreComplexIntroducer {
     func whatDoesItDo(_ object: Any) -> String
 }
 
-func whoIsIt(announcer: String, name: String) -> String
+func whoIsIt(announcer: String, 
+             name: String) -> String
 func whatIsIt(objectIdentifier: ObjectIdentifier, 
               object: Any) -> String
 func whatDoesItDo(objectExplainer: ObjectExplainer, 
                   object: Any) -> String
 ```
+
+## Dangerous Introducer
+
+``` swift
+class ICanHazDangerousProperty {
+    var announcer = "Taylor Swift"
+    func announce() {
+        DispatchQueue.global().async {
+            print("\(self.announcer) says \"Your ten year old memes are lame.\"")
+            semaphore.signal()
+        }
+    }
+}
+let dangerous = ICanHazDangerousProperty()
+
+// This call is straight-forward
+dangerous.announcer = "Beyonce"
+dangerous.announce()
+semaphore.wait()
+// Beyonce says "Your ten year old memes are lame."
+
+// But this one is unexpected!
+dangerous.announcer = "Taylor Swift"
+dangerous.announce()
+dangerous.announcer = "Kanye West"
+semaphore.wait()
+// Kanye West says "Your ten year old memes are lame."
+```
+
+# Safe Introducer
+
+``` Swift
+class SafeAsyncIntroducer {
+    var announcer = "Taylor Swift"
+    func announce() {
+        DispatchQueue.global().async {
+            print("\(self.announcer) says \"Your ten year old memes are lame.\"")
+            semaphore.signal()
+        }
+    }
+}
+let safe = SafeAsyncIntroducer()
+safe.announce(announcer: "Taylor Swift")
 
 
 ---
