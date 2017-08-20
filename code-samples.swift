@@ -1,37 +1,32 @@
 import Foundation
 
-// Functional
+// # Simple Introducer
 
-let expectedIntroduction = "It's Poppy"
+// Function
 
 func whoIsIt(_ name: String) -> String {
     return "It's \(name)"
 }
+assert("It's Poppy" == whoIsIt("Poppy"))
 
-_ = whoIsIt("Poppy")
-
-assert(expectedIntroduction == whoIsIt("Poppy"))
+// Object
 
 class SimpleIntroducer {
     func whoIsIt(_ name: String) -> String {
         return "It's \(name)"
     }
 }
+assert("It's Poppy" == SimpleIntroducer().whoIsIt("Poppy"))
 
-// Interface
-//class SimpleIntroducer {
-//    func whoIsIt(_ name: String) -> String
-//}
-
-_ = SimpleIntroducer().whoIsIt("Poppy")
-//assert(expectedIntroduction == whoIsIt("Poppy"))
+// # Less Simple Introducer
 
 class LessSimpleIntroducer {
     var announcer = "Taylor Swift"
     func whoIsIt(_ name: String) -> String {
-        return "It's \(name)"
+        return "\(announcer) says \"It's \(name)\""
     }
 }
+assert("Taylor Swift says \"It's Poppy\"" == LessSimpleIntroducer().whoIsIt("Poppy"))
 
 // Interface
 //class LessSimpleIntroducer {

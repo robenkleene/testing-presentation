@@ -18,7 +18,32 @@
 * This means *no state*.
 * Unlike Object-Orientated Programming, where methods can access objects state (e.g., through properties).
 
-## 
+## Simple Introducer
+
+``` swift
+let expectedIntroduction = "It's Poppy"
+
+// Function
+
+func whoIsIt(_ name: String) -> String {
+    return "It's \(name)"
+}
+assert(expectedIntroduction == whoIsIt("Poppy"))
+
+// Object
+
+class SimpleIntroducer {
+    func whoIsIt(_ name: String) -> String {
+        return "It's \(name)"
+    }
+}
+assert(expectedIntroduction == SimpleIntroducer().whoIsIt("Poppy"))
+```
+---
+
+## Less Simple Introducer
+
+
 
 ---
 
