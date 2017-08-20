@@ -21,15 +21,6 @@
 ## Simple Introducer
 
 ``` swift
-let expectedIntroduction = "It's Poppy"
-
-// Function
-
-func whoIsIt(_ name: String) -> String {
-    return "It's \(name)"
-}
-assert(expectedIntroduction == whoIsIt("Poppy"))
-
 // Object
 
 class SimpleIntroducer {
@@ -37,12 +28,74 @@ class SimpleIntroducer {
         return "It's \(name)"
     }
 }
-assert(expectedIntroduction == SimpleIntroducer().whoIsIt("Poppy"))
+assert("It's Poppy" == SimpleIntroducer().whoIsIt("Poppy"))
+
+// Function
+
+// Don't acually do this!
+func whoIsIt(_ name: String) -> String {
+    return "It's \(name)"
+}
+assert("It's Poppy" == whoIsIt("Poppy"))
 ```
+
 ---
 
 ## Less Simple Introducer
 
+``` swift
+// Function
+
+// Don't acually do this!
+func whoIsIt(announcer: String, name: String) -> String {
+    return "\(announcer) says \"It's \(name)\""
+}
+assert("Kanye West says \"It's Poppy\"" == whoIsIt(announcer: "Kanye West", 
+                                                   name: "Poppy"))
+// Object
+
+class LessSimpleIntroducer {
+    var announcer = "Taylor Swift"
+    func whoIsIt(_ name: String) -> String {
+        return "\(announcer) says \"It's \(name)\""
+    }
+}
+let lessSimpleIntroducer = LessSimpleIntroducer()
+lessSimpleIntroducer.announcer = "Kanye West"
+assert("Kanye West says \"It's Poppy\"" == lessSimpleIntroducer.whoIsIt("Poppy"))
+```
+
+---
+
+## Interfaces
+
+``` swift
+class LessSimpleIntroducer {
+    var announcer: String
+    func whoIsIt(_ name: String) -> String 
+}
+
+func whoIsIt(announcer: String, name: String) -> String
+```
+
+## More Complex Interfaces
+
+``` swift
+class MoreComplexIntroducer {
+    var announcer: String
+    var objectIdentifier: ObjectIdentifier
+    var objectExplainer: ObjectExplainer
+    func whoIsIt(_ name: String) -> String
+    func whatIsIt(_ object: Any) -> String
+    func whatDoesItDo(_ object: Any) -> String
+}
+
+func whoIsIt(announcer: String, name: String) -> String
+func whatIsIt(objectIdentifier: ObjectIdentifier, 
+              object: Any) -> String
+func whatDoesItDo(objectExplainer: ObjectExplainer, 
+                  object: Any) -> String
+```
 
 
 ---

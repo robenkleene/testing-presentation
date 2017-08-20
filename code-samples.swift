@@ -2,13 +2,6 @@ import Foundation
 
 // # Simple Introducer
 
-// Function
-
-func whoIsIt(_ name: String) -> String {
-    return "It's \(name)"
-}
-assert("It's Poppy" == whoIsIt("Poppy"))
-
 // Object
 
 class SimpleIntroducer {
@@ -18,7 +11,24 @@ class SimpleIntroducer {
 }
 assert("It's Poppy" == SimpleIntroducer().whoIsIt("Poppy"))
 
+// Function
+
+func whoIsIt(_ name: String) -> String {
+    return "It's \(name)"
+}
+assert("It's Poppy" == whoIsIt("Poppy"))
+
 // # Less Simple Introducer
+
+// Function
+
+// Don't acually do this!
+func whoIsIt(announcer: String, name: String) -> String {
+    return "\(announcer) says \"It's \(name)\""
+}
+assert("Kanye West says \"It's Poppy\"" == whoIsIt(announcer: "Kanye West", 
+                                                   name: "Poppy"))
+// Object
 
 class LessSimpleIntroducer {
     var announcer = "Taylor Swift"
@@ -26,13 +36,9 @@ class LessSimpleIntroducer {
         return "\(announcer) says \"It's \(name)\""
     }
 }
-assert("Taylor Swift says \"It's Poppy\"" == LessSimpleIntroducer().whoIsIt("Poppy"))
-
-// Interface
-//class LessSimpleIntroducer {
-//    var announcer: String
-//    func whoIsIt(_ name: String) -> String
-//}
+let lessSimpleIntroducer = LessSimpleIntroducer()
+lessSimpleIntroducer.announcer = "Kanye West"
+assert("Kanye West says \"It's Poppy\"" == lessSimpleIntroducer.whoIsIt("Poppy"))
 
 class SafeIntroducer {
     var announcer = "Taylor Swift"
