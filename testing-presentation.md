@@ -4,7 +4,7 @@
 * Functional Programming
 * Dependency Injection
 * Composition
-* Mocking
+* Mock Objects
 
 ---
 
@@ -261,7 +261,17 @@ class ResponseParser {
 
 ---
 
-> Reason #1 composition facilitates testing is by making the classes easier to instantiate
+Composition allows individual classes responsible for subsets of code to be instantiated separately
+
+``` swift
+let apiCaller = APICaller()
+let responseParser = ResponseParser()
+let tweetGetter = TweetGetter()
+```
+
+---
+
+> Reason #1 that composition facilitates testing is by making it possible to test subsets of code individually
 
 ---
 
@@ -295,17 +305,40 @@ class FlexibleTweetGetter {
 
 ---
 
-# Mocking
+# Mock Objects
 
-
-
----
-
-> Reason #1 dependency injection facilitates testing is because it enables dependencies to be mocked
+* [Mock object - Wikipedia](https://en.wikipedia.org/wiki/Mock_object): "Mock objects are simulated objects that mimic the behavior of real objects in controlled ways."
+* The `FlexibleTweetGetter` could be initialized with an `APICaller`, that instead of making a network call, it returns a constant `string` for the API response.
 
 ---
 
-> Reason #2 composition facilitates testing is because it enables dependency injection
+Mock Objects Example
+
+``` swift
+class MockAPICaller: APICaller {
+    override func downloadTweets(at url: URL, completion: (String) -> ()) {
+        // Use a built-in constant JSON response
+    }
+}
+
+class TweetGetterTests: XCTestCase {
+    var tweetGetter: TweetGetter!
+
+    override func setUp() {
+        super.setUp()
+        tweetGetter = TweetGetter(apiCaller: MockAPICaller(), 
+                                  responseParser: ResponseParser())
+    }
+}
+```
+
+---
+
+> Reason #1 that dependency injection facilitates testing is because it allows dependencies to be mocked
+
+---
+
+> Reason #2 that composition facilitates testing is because it enables dependency injection
 
 ---
 
