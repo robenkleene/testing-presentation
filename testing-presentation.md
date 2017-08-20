@@ -1,8 +1,19 @@
 # Practical Testing for an Imperative World
 
+* Unit testing
 * Functional Programming
 * Dependency Injection
 * Composition
+* Mocking
+
+---
+
+# Why using unit testing?
+
+* No more "moving the food around on your plate"
+* Reduce feedback loops
+* Facilitate refactoring
+* Manual testing is boring
 
 ---
 
@@ -157,7 +168,7 @@ ClearAsyncIntroducer.whoIsIt(announcer: "Taylor Swift", name: "Poppy")
 ```
 ---
 
-> Reason #2 that functional programming facilitates testing by reducing your testing surface area
+> Reason #2 that functional programming facilitates testing by reducing the testing surface area
 
 ---
 
@@ -249,6 +260,55 @@ class ResponseParser {
 ```
 
 ---
+
+> Reason #1 composition facilitates testing is by making the classes easier to instantiate
+
+---
+
+# Dependency Injection
+
+[Dependency injection - Wikipedia](https://en.wikipedia.org/wiki/Dependency_injection): "Dependency injection is a technique whereby one object supplies the dependencies of another object"
+* [James Shore](http://www.jamesshore.com/Blog/Dependency-Injection-Demystified.html): "'Dependency Injection' is a 25-dollar term for a 5-cent concept"
+* Instead of the `TweetGetter` initializing the `APICaller` and `ResponseParser` itself, it takes those dependencies as initialization parameters.
+
+---
+
+``` swift
+// Without Dependency Injection
+
+class StiffTweetGetter {
+    let apiCaller = APICaller()
+    let responseParser = ResponseParser()
+}
+
+// With Dependency Injection
+
+class FlexibleTweetGetter {
+    let apiCaller: APICaller
+    let responseParser: ResponseParser
+    init(apiCaller: APICaller, responseParser: ResponseParser) {
+        self.apiCaller = apiCaller
+        self.responseParser = responseParser
+    }
+}
+```
+
+---
+
+# Mocking
+
+
+
+---
+
+> Reason #1 dependency injection facilitates testing is because it enables dependencies to be mocked
+
+---
+
+> Reason #2 composition facilitates testing is because it enables dependency injection
+
+---
+
 ## Testing State
 
 Testing updates means testing state, so:
