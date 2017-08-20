@@ -6,23 +6,26 @@
 
 ---
 
-## Functional Style
+# Functional Style
 
 * First class functions
 * Higher-order functions
 * Declarative (vs. Imperative)
 
-## Functional Programming
+---
+
+# Functional Programming
 
 * Calling a function with the same inputs always generates the same result.
 * This means *no state*.
 * Unlike Object-Orientated Programming, where methods can access objects state (e.g., through properties).
 
-## Simple Introducer
+---
+
+Simple Introducer
 
 ``` swift
-// Object
-
+// Class
 class SimpleIntroducer {
     func whoIsIt(_ name: String) -> String {
         return "It's \(name)"
@@ -30,9 +33,7 @@ class SimpleIntroducer {
 }
 assert("It's Poppy" == SimpleIntroducer().whoIsIt("Poppy"))
 
-// Function
-
-// Don't acually do this!
+// Function (Don't actually do this!)
 func whoIsIt(_ name: String) -> String {
     return "It's \(name)"
 }
@@ -41,19 +42,10 @@ assert("It's Poppy" == whoIsIt("Poppy"))
 
 ---
 
-## Less Simple Introducer
+Less Simple Introducer
 
 ``` swift
-// Function
-
-// Don't acually do this!
-func whoIsIt(announcer: String, name: String) -> String {
-    return "\(announcer) says \"It's \(name)\""
-}
-assert("Kanye West says \"It's Poppy\"" == whoIsIt(announcer: "Kanye West", 
-                                                   name: "Poppy"))
-// Object
-
+// Class
 class LessSimpleIntroducer {
     var announcer = "Taylor Swift"
     func whoIsIt(_ name: String) -> String {
@@ -61,27 +53,40 @@ class LessSimpleIntroducer {
     }
 }
 let lessSimpleIntroducer = LessSimpleIntroducer()
-lessSimpleIntroducer.announcer = "Kanye West"
-assert("Kanye West says \"It's Poppy\"" == lessSimpleIntroducer.whoIsIt("Poppy"))
+lessSimpleIntroducer.announcer = "Beyonce"
+assert("Beyonce says \"It's Poppy\"" == lessSimpleIntroducer.whoIsIt("Poppy"))
+// Function (Don't actually do this!)
+func whoIsIt(announcer: String, name: String) -> String {
+    return "\(announcer) says \"It's \(name)\""
+}
+assert("Kanye West says \"It's Poppy\"" == whoIsIt(announcer: "Kanye West", 
+                                                   name: "Poppy"))
+
 ```
 
 ---
 
-## Interfaces
+Interfaces
 
 ``` swift
+// Class
 class LessSimpleIntroducer {
     var announcer: String
     func whoIsIt(_ name: String) -> String 
 }
 
+// Function
 func whoIsIt(announcer: String, 
              name: String) -> String
 ```
 
-## More Complex Interfaces
+---
+
+More Complex Interfaces
 
 ``` swift
+
+// Class
 class MoreComplexIntroducer {
     var announcer: String
     var objectIdentifier: ObjectIdentifier
@@ -91,6 +96,7 @@ class MoreComplexIntroducer {
     func whatDoesItDo(_ object: Any) -> String
 }
 
+// Function
 func whoIsIt(announcer: String, 
              name: String) -> String
 func whatIsIt(objectIdentifier: ObjectIdentifier, 
@@ -99,49 +105,59 @@ func whatDoesItDo(objectExplainer: ObjectExplainer,
                   object: Any) -> String
 ```
 
-## Dangerous Introducer
+---
+
+> Reason #1 that functional programming facilitates testing is by clarifying your API
+
+---
+
+Confusing Async Introducer
 
 ``` swift
-class ICanHazDangerousProperty {
+let semaphore = DispatchSemaphore(value: 0)
+class ConfusingAsyncIntroducer {
     var announcer = "Taylor Swift"
-    func announce() {
+    func whoIsIt(_ name: String) {
         DispatchQueue.global().async {
-            print("\(self.announcer) says \"Your ten year old memes are lame.\"")
+            print("\(self.announcer) says \"It's \(name)\"")
             semaphore.signal()
         }
     }
 }
-let dangerous = ICanHazDangerousProperty()
+
+let confusing = ConfusingAsyncIntroducer()
 
 // This call is straight-forward
-dangerous.announcer = "Beyonce"
-dangerous.announce()
+confusing.announcer = "Beyonce"
+confusing.whoIsIt("Poppy")
 semaphore.wait()
-// Beyonce says "Your ten year old memes are lame."
+// Beyonce says "It's Poppy"
 
 // But this one is unexpected!
-dangerous.announcer = "Taylor Swift"
-dangerous.announce()
-dangerous.announcer = "Kanye West"
+confusing.announcer = "Taylor Swift"
+confusing.whoIsIt("Poppy")
+confusing.announcer = "Kanye West"
 semaphore.wait()
-// Kanye West says "Your ten year old memes are lame."
+// Kanye West says "It's Poppy"
 ```
+---
 
-# Safe Introducer
+Clear Async Introducer
 
-``` Swift
-class SafeAsyncIntroducer {
-    var announcer = "Taylor Swift"
-    func announce() {
+``` swift
+class ClearAsyncIntroducer {
+    class func whoIsIt(announcer: String, name: String) {
         DispatchQueue.global().async {
-            print("\(self.announcer) says \"Your ten year old memes are lame.\"")
+            print("\(announcer) says \"It's \(name)\"")
             semaphore.signal()
         }
     }
 }
-let safe = SafeAsyncIntroducer()
-safe.announce(announcer: "Taylor Swift")
+ClearAsyncIntroducer.whoIsIt(announcer: "Taylor Swift", name: "Poppy")
+```
+---
 
+> Reason #2 that functional programming facilitates testing by reducing your testing surface area
 
 ---
 

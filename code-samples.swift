@@ -2,8 +2,7 @@ import Foundation
 
 // # Simple Introducer
 
-// Object
-
+// Class
 class SimpleIntroducer {
     func whoIsIt(_ name: String) -> String {
         return "It's \(name)"
@@ -11,8 +10,7 @@ class SimpleIntroducer {
 }
 assert("It's Poppy" == SimpleIntroducer().whoIsIt("Poppy"))
 
-// Function
-
+// Function (Don't actually do this!)
 func whoIsIt(_ name: String) -> String {
     return "It's \(name)"
 }
@@ -20,16 +18,7 @@ assert("It's Poppy" == whoIsIt("Poppy"))
 
 // # Less Simple Introducer
 
-// Function
-
-// Don't acually do this!
-func whoIsIt(announcer: String, name: String) -> String {
-    return "\(announcer) says \"It's \(name)\""
-}
-assert("Kanye West says \"It's Poppy\"" == whoIsIt(announcer: "Kanye West", 
-                                                   name: "Poppy"))
-// Object
-
+// Class
 class LessSimpleIntroducer {
     var announcer = "Taylor Swift"
     func whoIsIt(_ name: String) -> String {
@@ -40,10 +29,17 @@ let lessSimpleIntroducer = LessSimpleIntroducer()
 lessSimpleIntroducer.announcer = "Beyonce"
 assert("Beyonce says \"It's Poppy\"" == lessSimpleIntroducer.whoIsIt("Poppy"))
 
+// Function (Don't actually do this!)
+func whoIsIt(announcer: String, name: String) -> String {
+    return "\(announcer) says \"It's \(name)\""
+}
+assert("Kanye West says \"It's Poppy\"" == whoIsIt(announcer: "Kanye West", 
+                                                   name: "Poppy"))
+
+
 // # Confusing Async Introducer
 
 let semaphore = DispatchSemaphore(value: 0)
-
 class ConfusingAsyncIntroducer {
     var announcer = "Taylor Swift"
     var objectIdentifier: Any?
@@ -74,8 +70,6 @@ semaphore.wait()
 // # Clear Async Introducer
 
 class ClearAsyncIntroducer {
-    var objectIdentifier: Any?
-    var objectExplainer: Any?
     class func whoIsIt(announcer: String, name: String) {
         DispatchQueue.global().async {
             print("\(announcer) says \"It's \(name)\"")
