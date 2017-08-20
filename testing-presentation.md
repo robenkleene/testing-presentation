@@ -1,22 +1,31 @@
-## Testing Apps That Update
+# Practical Testing for an Imperative World
 
-What's special about testing news apps?
-
-1. News apps need to update.
-2. Testing updates is hard.
+* Functional Programming
+* Dependency Injection
+* Composition
 
 ---
 
-## Functional vs. OOP
+## Functional Style
 
-Why is testing updates hard?
+* First class functions
+* Higher-order functions
+* Declarative (vs. Imperative)
+
+## Functional Programming
+
+* Calling a function with the same inputs always generates the same result.
+* This means *no state*.
+* Unlike Object-Orientated Programming, where methods can access objects state (e.g., through properties).
+
+## 
+
+---
+
+## Why does functional programming help us write tests?
 
 > **"Imperative shell, functional core"**
 -- *Gary Bernhardt, Boundaries, 2012*
-
-* Functional means the same arguments generates the same result.
-* Unlike Object-Orientated Programming where methods can access objects state (e.g., through properties).
-
 
 ---
 
