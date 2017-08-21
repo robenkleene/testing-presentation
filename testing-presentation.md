@@ -1,14 +1,14 @@
 # Practical Testing for an Imperative World
 
-* Unit testing
+* Unit Testing
 * Functional Programming
-* Dependency Injection
 * Composition
+* Dependency Injection
 * Mock Objects
 
 ---
 
-# Why using unit testing?
+# Why unit tests?
 
 * No more "moving the food around on your plate"
 * Reduce feedback loops
@@ -342,56 +342,61 @@ class TweetGetterTests: XCTestCase {
 
 ---
 
-## Testing State
+## How to Structure Tests
 
-Testing updates means testing state, so:
-
-1. Your surface area for bugs is enormous.
-2. Your tests will be complicated.
-
----
-
-## Our Testing Techniques
-
-How we test updates in the Wall Street Journal for iOS.
+* Everything is functional that can be functional
+* Composed all of the things
+* Anything can be dependency injected into anything
+* How do I write my tests now?
 
 ---
 
-## The Basic Building Block
+## Basic Building Block
 
-* Copy test data into the test bundle as a build phase.
-* Create a simple helper function to access the test data.
+* Copy test data into the test bundle as a build phase
+* Create a simple helper function to access the test data
 
 ``` swift
 extension XCTestCase {
     public func fileURLForTestData(withPathComponent pathComponent: String) -> URL {
-        let bundleURL = Bundle(for: self).bundleURL
+        let bundleURL = Bundle(for: type(of: self)).bundleURL
         let fileURL = bundleURL.appendingPathComponent("TestData").appendingPathComponent(pathComponent)
         return fileURL
     }
 }
 
 class ManifestTests: XCTestCase {
-	let testDataManifestNoEntryPathComponent = "manifestNoEntry.json"
-	fileURLForTestData(withFilename: testDataManifestNoEntryPathComponent)
+    func testManifest() {
+        let testDataManifestNoEntryPathComponent = "manifestNoEntry.json"
+        let fileURL = fileURLForTestData(withPathComponent: testDataManifestNoEntryPathComponent)
+        print("fileURL = \(fileURL)")
+    }
 }
 ```
 
 ---
 
-## More Sophisticated Test Cases
+## Trick #1: `XCTestCase` Subclasses
 
-Build up to more sophisticated test cases by subclassing:
-
-``` swift
-class MockFilesContainerTestCase: XCTestCase { }
-class MockCatalogUpdaterTestCase: FilesContainerTestCase { }
-class MockBarflyTestCase: MockCatalogUpdaterTestCase { }
-```
-
-Note these are postfixed with `TestCase` not `Tests`. Tests use:
+These are postfixed with `TestCase` not `Tests`. Tests use:
 
 ``` swift
+class MockFilesContainerTestCase: XCTestCase {
+    var mockFilesContainer: FilesContainer!
+    override func setUp() {
+        super.setUp()
+        mockFilesContainer = MockFilesContainer()
+    }
+}
+
+class MockCatalogUpdaterTestCase: MockFilesContainerTestCase {
+    var mockCatalogUpdater: CatalogUpdater!
+    override func setUp() {
+        super.setUp()
+        mockCatalogUpdater = MockCatalogUpdater(filesContainer: mockFilesContainer)
+    }
+}
+
 class CatalogUpdaterTests: MockCatalogUpdaterTestCase { }
 ```
 
