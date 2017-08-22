@@ -357,6 +357,10 @@ class TweetGetterTests: XCTestCase {
 * Copy test data into the test bundle as a build phase
 * Create a simple helper function to access the test data
 
+---
+
+## Basic Building Block Example
+
 ``` swift
 extension XCTestCase {
     public func fileURLForTestData(withPathComponent pathComponent: String) -> URL {
@@ -377,9 +381,9 @@ class ManifestTests: XCTestCase {
 
 ---
 
-## Trick #1: `XCTestCase` Subclasses
+## Weird Trick #1: `XCTestCase` Subclasses
 
-These are postfixed with `TestCase` not `Tests`. Tests use:
+These are postfixed with `TestCase` not `Tests`.
 
 ``` swift
 class MockFilesContainerTestCase: XCTestCase {
@@ -407,22 +411,45 @@ class CatalogUpdaterTests: MockCatalogUpdaterTestCase { }
 
 ``` swift
 class BarflyCatalogUpdateTestCase: TestDataFilesContainerTestCase {
-	var barfly: MockBarfly!
-	func setUp() {
-		// Setup `MockBarfly` dependencies
-		barfly = MockBarfly(...)
-	}
+    var barfly: MockBarfly!
+    func setUp() {
+        barfly = MockBarfly(...)
+    }
 
-	func updateCatalog() -> Catalog {
-		var updatedCatalog: Catalog!
-		let updateCatalogExpectation = expectation(description: "Update catalog")
-		updateCatalogWithCompletion { (error, catalog) -> Void in
-			updatedCatalog = catalog
-			updateCatalogExpectation.fulfill()
-		}
-		waitForExpectations(timeout: testTimeout, handler: nil)
-		return updatedCatalog
-	}
+    func updateCatalog() -> Catalog {
+        var updatedCatalog: Catalog!
+        let updateCatalogExpectation = expectation(description: "Update catalog")
+        updateCatalogWithCompletion { (error, catalog) -> Void in
+            updatedCatalog = catalog
+            updateCatalogExpectation.fulfill()
+        }
+        waitForExpectations(timeout: testTimeout, handler: nil)
+        return updatedCatalog
+    }
+}
+```
+
+---
+
+## It Scales!
+
+This techniques scales up naturally to complex classes with many dependencies.
+
+``` swift
+class Barfly {
+   public init(catalogContainerLoader: CatalogContainerLoader,
+               catalogController: CatalogController,
+               containerLoader: ContainerLoader,
+               trashDirectoryURL: URL,
+               jobCoordinator: JobCoordinator,
+               containerManifestLoader: ContainerManifestLoader,
+               foregroundContainersUpdater: ForegroundContainersUpdater,
+               backgroundContainersUpdater: BackgroundContainersUpdater,
+               janitor: Janitor,
+               maxConcurrentBackgroundDownloads: Int)
+   {
+       // ...
+   }
 }
 ```
 
@@ -435,15 +462,15 @@ class BarflyCatalogUpdateTestCase: TestDataFilesContainerTestCase {
 
 ``` swift
 class ContainerResultsControllerTests: BarflyCatalogUpdateTestCase {
-	let firstCatalog = loadCatalog()
-	let updatedCatalog = updateCatalog()
-	XCTAssertTrue(containerResultsControllerDelegate.delegateWasInformed)
-	XCTAssertTrue(type(of: self).doContainers(containerResultsController.availableContainers(), 
-								 matchContainers: firstCatalog.containers)))
+    let firstCatalog = loadCatalog()
+    let updatedCatalog = updateCatalog()
+    XCTAssertTrue(containerResultsControllerDelegate.delegateWasInformed)
+    XCTAssertTrue(type(of: self).doContainers(containerResultsController.availableContainers(),
+                                              matchContainers: firstCatalog.containers)))
 
-	_ = containerResultsController.applyUpdate()
-	XCTAssertTrue(type(of: self).doContainers(containerResultsController.availableContainers(), 
-	                             matchContainers: updatedCatalog.containers)))
+    _ = containerResultsController.applyUpdate()
+    XCTAssertTrue(type(of: self).doContainers(containerResultsController.availableContainers() 
+                                              matchContainers: updatedCatalog.containers)))
 }
 ```
 
