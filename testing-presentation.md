@@ -1,5 +1,7 @@
 # Practical Testing for an Imperative World
 
+[robenkleene/testing-presentation](https://github.com/robenkleene/testing-presentation)
+
 Roben Kleene
 
 ---
@@ -506,5 +508,7 @@ This way `WSJ Tests` can subclass `BarflyCatalogUpdateTestCase` and call `update
 ## That's All Folks
 
 *Thanks for listening!*
+
+[robenkleene/testing-presentation](https://github.com/robenkleene/testing-presentation)
 
 Roben Kleene
