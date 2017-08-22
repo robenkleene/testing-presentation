@@ -1,5 +1,7 @@
 # Practical Testing for an Imperative World
 
+Roben Kleene
+
 ---
 
 # Topics
@@ -324,7 +326,7 @@ class FlexibleTweetGetter {
 # Mock Objects
 
 * [Mock object - Wikipedia](https://en.wikipedia.org/wiki/Mock_object): "Mock objects are simulated objects that mimic the behavior of real objects in controlled ways."
-* The `FlexibleTweetGetter` could be initialized with an `APICaller`, that instead of making network calls, it returns a constant `string` for the API response.
+* For example, `TweetGetter` could be initialized with a `MockAPICaller`, that instead of making network calls, it returns a constant `string` for the API response.
 
 ---
 
@@ -345,6 +347,11 @@ class TweetGetterTests: XCTestCase {
         tweetGetter = TweetGetter(apiCaller: MockAPICaller(), 
                                   responseParser: ResponseParser())
     }
+
+    func testTweetGetter() {
+        // Test that `tweetGetter.getTweets(at:completion:)` produces 
+        // the correct tweets for the constant JSON response
+    }
 }
 ```
 
@@ -354,34 +361,29 @@ class TweetGetterTests: XCTestCase {
 
 ---
 
-> Reason #2 that composition facilitates testing is because it enables dependency injection.
+> Reason #2 that composition facilitates testing is because it allows dependency injection.
+
+---
+
+# Summary
+
+* Functional programming clarifies a classes API, and reduces the testing surface area.
+* Composition makes individual components loadable separately, and faciliates dependency injection.
+* Dependency injection facilitates mocking a classes dependencies.
 
 ---
 
 ## Case Study: WSJ's Barfly
 
-* Barfly, because our backend system is called Pubcrawl (it crawls publications)
-* Barfly is responsible for downloading all the content in the WSJ app
-
----
-
-## How to Structure Tests
-
-* Everything is functional that can be functional
-* Composed all of the things
-* Anything can be dependency injected into anything
-* How do I write my tests now?
+* Barfly, because our backend system is called Pubcrawl (it crawls publications).
+* Barfly is responsible for downloading all the content in the WSJ app.
 
 ---
 
 ## Basic Building Block
 
-* Copy test data into the test bundle as a build phase
-* Create a simple helper function to access the test data
-
----
-
-## Basic Building Block Example
+* Copy a `TestData` folder into the test bundle as a build phase.
+* Create a simple helper function to access the contents of the `TestData` folder.
 
 ``` swift
 extension XCTestCase {
@@ -403,9 +405,9 @@ class ManifestTests: XCTestCase {
 
 ---
 
-## Weird Trick #1: `XCTestCase` Subclasses
+Weird Trick #1: `XCTestCase` Subclasses
 
-These are postfixed with `TestCase` not `Tests`.
+(These are postfixed with `TestCase` not `Tests`.)
 
 ``` swift
 class MockFilesContainerTestCase: XCTestCase {
@@ -429,7 +431,7 @@ class CatalogUpdaterTests: MockCatalogUpdaterTestCase { }
 
 ---
 
-## At the Top
+It's mocks all the way down
 
 ``` swift
 class BarflyCatalogUpdateTestCase: TestDataFilesContainerTestCase {
@@ -453,9 +455,7 @@ class BarflyCatalogUpdateTestCase: TestDataFilesContainerTestCase {
 
 ---
 
-## It Scales!
-
-This techniques scales up naturally to complex classes with many dependencies.
+It Scales!
 
 ``` swift
 class Barfly {
@@ -477,25 +477,25 @@ class Barfly {
 
 ---
 
-## Weird Trick #2: `Tester` Frameworks
+Weird Trick #2: `Tester` Frameworks
 
-Create "Testers" to share the same testing infrastructure across apps and frameworks.
+Create "Tester" targets to share the same testing infrastructure across apps and frameworks.
 
 ```
-Barfly Targets							WSJ Targets
+Barfly Targets					WSJ Targets
 
-* Barfly								* WSJ
-* BarflyTester								* Imports Barfly
-* BarflyTests							* WSJ Tests
-	* Imports Barfly						* Imports Barfly
-	* Imports BarflyTester					* Imports BarflyTester
+* Barfly						* WSJ
+* BarflyTester						* Imports Barfly
+* BarflyTests					* WSJ Tests
+	* Imports Barfly				* Imports Barfly
+	* Imports BarflyTester			* Imports BarflyTester
 ```
 
 This way `WSJ Tests` can subclass `BarflyCatalogUpdateTestCase` and call `updateCatalog()`.
 
 ---
 
-## That's All
+## That's All Folks
 
 *Thanks for listening!*
 
