@@ -1,5 +1,9 @@
 # Practical Testing for an Imperative World
 
+---
+
+# Topics
+
 * Unit Testing
 * Functional Programming
 * Composition
@@ -9,7 +13,7 @@
 
 ---
 
-# Why unit tests?
+# Why write unit tests?
 
 * No more "moving the food around on your plate"
 * Reduce feedback loops
@@ -28,13 +32,13 @@
 
 # Functional Programming
 
-* Calling a function with the same inputs always generates the same result.
+* Calling a function with the same inputs always produces the same result.
 * This means *no state*.
 * Unlike Object-Orientated Programming, where methods can access objects state (e.g., through properties).
 
 ---
 
-Simple Introducer
+Class vs. Function: Simple Introducer
 
 ``` swift
 // Class
@@ -54,7 +58,7 @@ assert("It's Poppy" == whoIsIt("Poppy"))
 
 ---
 
-Less Simple Introducer
+Class vs. Function: Less Simple Introducer
 
 ``` swift
 // Class
@@ -67,6 +71,7 @@ class LessSimpleIntroducer {
 let lessSimpleIntroducer = LessSimpleIntroducer()
 lessSimpleIntroducer.announcer = "Beyonce"
 assert("Beyonce says \"It's Poppy\"" == lessSimpleIntroducer.whoIsIt("Poppy"))
+
 // Function (Don't actually do this!)
 func whoIsIt(announcer: String, name: String) -> String {
     return "\(announcer) says \"It's \(name)\""
@@ -78,7 +83,7 @@ assert("Kanye West says \"It's Poppy\"" == whoIsIt(announcer: "Kanye West",
 
 ---
 
-Interfaces
+Class vs. Function: Interfaces
 
 ``` swift
 // Class
@@ -343,6 +348,13 @@ class TweetGetterTests: XCTestCase {
 
 ---
 
+## Case Study: WSJ's Barfly
+
+* Barfly, because our backend system is called Pubcrawl (it crawls publications)
+* Barfly is responsible for downloading all the content in the WSJ app
+
+---
+
 ## How to Structure Tests
 
 * Everything is functional that can be functional
@@ -455,52 +467,21 @@ class Barfly {
 
 ---
 
-## An Example Tests
-
-1. Use the before and after catalogs.
-2. Test that callbacks fire.
-
-``` swift
-class ContainerResultsControllerTests: BarflyCatalogUpdateTestCase {
-    let firstCatalog = loadCatalog()
-    let updatedCatalog = updateCatalog()
-    XCTAssertTrue(containerResultsControllerDelegate.delegateWasInformed)
-    XCTAssertTrue(type(of: self).doContainers(containerResultsController.availableContainers(),
-                                              matchContainers: firstCatalog.containers)))
-
-    _ = containerResultsController.applyUpdate()
-    XCTAssertTrue(type(of: self).doContainers(containerResultsController.availableContainers() 
-                                              matchContainers: updatedCatalog.containers)))
-}
-```
-
----
-
-## Testing Across Apps & Frameworks
+## Weird Trick #2: `Tester` Frameworks
 
 Create "Testers" to share the same testing infrastructure across apps and frameworks.
 
 ```
-Barfly Targets                           WSJ Targets
+Barfly Targets							WSJ Targets
 
-* Barfly                                 * WSJ
+* Barfly								* WSJ
 * BarflyTester								* Imports Barfly
-	* Imports XCTest					 * WSJ Tests
-* BarflyTests								* Imports XCTest (implicately)
-	* Imports Barfly and BarflyTester		 * Imports Barfly and BarflyTester
+* BarflyTests							* WSJ Tests
+	* Imports Barfly						* Imports Barfly
+	* Imports BarflyTester					* Imports BarflyTester
 ```
 
 This way `WSJ Tests` can subclass `BarflyCatalogUpdateTestCase` and call `updateCatalog()`.
-
----
-
-## Tricks & Gotchas
-
-* Mocked all network IO, using `HTTPStubs`.
-* Also mocked all disk IO (disk IO is slow, especially with a large number of content files). 
-	* Mocked our lowest-level file system classes to wrap the `TestData` directories in the test bundle.
-
-If we did it again, I'd use that same technique for network IO instead of `HTTPStubs` because it was more reliable (no swizzling).
 
 ---
 
