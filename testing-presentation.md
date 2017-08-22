@@ -124,37 +124,33 @@ func whatDoesItDo(objectExplainer: ObjectExplainer,
 
 ---
 
-> Reason #1 that functional programming facilitates testing is by clarifying your API
+> Reason #1 that functional programming facilitates testing is by clarifying your API.
 
 ---
 
 Confusing Async Introducer
 
 ``` swift
-let semaphore = DispatchSemaphore(value: 0)
 class ConfusingAsyncIntroducer {
     var announcer = "Taylor Swift"
     func whoIsIt(_ name: String) {
         DispatchQueue.global().async {
             print("\(self.announcer) says \"It's \(name)\"")
-            semaphore.signal()
         }
     }
 }
 
 let confusing = ConfusingAsyncIntroducer()
 
-// This call is straight-forward
+// This is straight-forward
 confusing.announcer = "Beyonce"
 confusing.whoIsIt("Poppy")
-semaphore.wait()
 // Beyonce says "It's Poppy"
 
-// But this one is unexpected!
+// But this is unexpected!
 confusing.announcer = "Taylor Swift"
 confusing.whoIsIt("Poppy")
 confusing.announcer = "Kanye West"
-semaphore.wait()
 // Kanye West says "It's Poppy"
 ```
 ---
@@ -166,19 +162,21 @@ class ClearAsyncIntroducer {
     class func whoIsIt(announcer: String, name: String) {
         DispatchQueue.global().async {
             print("\(announcer) says \"It's \(name)\"")
-            semaphore.signal()
         }
     }
 }
-ClearAsyncIntroducer.whoIsIt(announcer: "Taylor Swift", name: "Poppy")
+
+ClearAsyncIntroducer.whoIsIt(announcer: "Taylor Swift", 
+                             name: "Poppy")
 ```
----
-
-> Reason #2 that functional programming facilitates testing by reducing the testing surface area
 
 ---
 
-To facilitate testing, write as much of your program as possible in a functional style.
+> Reason #2 that functional programming facilitates testing by reducing the testing surface area.
+
+---
+
+As a general rule, to facilitate testing, make as much of your program functional as possible.
 
 > **"Imperative shell, functional core"**
 -- *Gary Bernhardt, Boundaries, 2012*
@@ -189,11 +187,11 @@ To facilitate testing, write as much of your program as possible in a functional
 
 * "Composition over inheritance"
 * [Object composition - Wikipedia](https://en.wikipedia.org/wiki/Object_composition): "Combine simple objects or data types into more complex ones"
-* For example, instead of a `UIViewController` downloading and parsing an API call itself, it might have a `TweetGetter` that performs that work. The `TweetGetter` might itself have an `APICaller` and a `ResponseParser`.
+* For example, in a twitter client, instead of having a `UIViewController` download and parse an API call itself, it could have a `TweetGetter` that performs that work. Then `TweetGetter` could have an `APICaller` and a `ResponseParser`.
 
 ---
 
-Without composition
+Without Composition
 
 ``` swift
 class AllInOneTweetListViewController: UIViewController {
@@ -204,7 +202,7 @@ class AllInOneTweetListViewController: UIViewController {
             // Display the tweets
         }
     }
-    
+
     func getTweets(at url: URL, completion: ([Tweet]) -> ()) {
         downloadTweets(at: url) { json in
             parseTweets(from: json) { tweets in
@@ -212,7 +210,7 @@ class AllInOneTweetListViewController: UIViewController {
             }
         }
     }
-    
+
     func downloadTweets(at url: URL, completion: (String) -> ()) {
         // ...
     }
@@ -225,7 +223,13 @@ class AllInOneTweetListViewController: UIViewController {
 
 ---
 
-With composition
+# What's wrong with this?
+
+Without composition, tests are difficult to write because individual components can't be loaded separately.
+
+---
+
+With Composition #1
 
 ``` swift
 class ComposedTweetListViewController: UIViewController {
@@ -238,7 +242,13 @@ class ComposedTweetListViewController: UIViewController {
         }
     }
 }
+```
 
+---
+
+With Composition #2
+
+``` swift
 class TweetGetter {
     let apiCaller = APICaller()
     let responseParser = ResponseParser()
@@ -267,7 +277,7 @@ class ResponseParser {
 
 ---
 
-Composition allows individual classes responsible for subsets of code to be instantiated separately
+With composition, individual components can be loaded separately.
 
 ``` swift
 let apiCaller = APICaller()
@@ -277,15 +287,15 @@ let tweetGetter = TweetGetter()
 
 ---
 
-> Reason #1 that composition facilitates testing is by making it possible to test subsets of code individually
+> Reason #1 that composition facilitates testing is by allowing individual components to be loaded separately.
 
 ---
 
 # Dependency Injection
 
-[Dependency injection - Wikipedia](https://en.wikipedia.org/wiki/Dependency_injection): "Dependency injection is a technique whereby one object supplies the dependencies of another object"
+* [Dependency injection - Wikipedia](https://en.wikipedia.org/wiki/Dependency_injection): "Dependency injection is a technique whereby one object supplies the dependencies of another object"
 * [James Shore](http://www.jamesshore.com/Blog/Dependency-Injection-Demystified.html): "'Dependency Injection' is a 25-dollar term for a 5-cent concept"
-* Instead of the `TweetGetter` initializing the `APICaller` and `ResponseParser` itself, it takes those dependencies as initialization parameters.
+* For example, instead of the `TweetGetter` initializing the `APICaller` and `ResponseParser` itself, it takes those dependencies as initialization parameters.
 
 ---
 
@@ -314,7 +324,7 @@ class FlexibleTweetGetter {
 # Mock Objects
 
 * [Mock object - Wikipedia](https://en.wikipedia.org/wiki/Mock_object): "Mock objects are simulated objects that mimic the behavior of real objects in controlled ways."
-* The `FlexibleTweetGetter` could be initialized with an `APICaller`, that instead of making a network call, it returns a constant `string` for the API response.
+* The `FlexibleTweetGetter` could be initialized with an `APICaller`, that instead of making network calls, it returns a constant `string` for the API response.
 
 ---
 
@@ -340,11 +350,11 @@ class TweetGetterTests: XCTestCase {
 
 ---
 
-> Reason #1 that dependency injection facilitates testing is because it allows dependencies to be mocked
+> Reason #1 that dependency injection facilitates testing is because it allows dependencies to be mocked.
 
 ---
 
-> Reason #2 that composition facilitates testing is because it enables dependency injection
+> Reason #2 that composition facilitates testing is because it enables dependency injection.
 
 ---
 
