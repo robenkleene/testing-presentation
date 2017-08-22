@@ -126,7 +126,7 @@ func whatDoesItDo(objectExplainer: ObjectExplainer,
 
 ---
 
-> Reason #1 that functional programming facilitates testing is by clarifying your API.
+> Reason #1 that *functional programming* facilitates testing is that it clarifies your API.
 
 ---
 
@@ -170,15 +170,17 @@ class ClearAsyncIntroducer {
 
 ClearAsyncIntroducer.whoIsIt(announcer: "Taylor Swift", 
                              name: "Poppy")
+// Taylor Swift says "It's Poppy"
+// And it's always the same, no matter what happens later!
 ```
 
 ---
 
-> Reason #2 that functional programming facilitates testing by reducing the testing surface area.
+> Reason #2 that *functional programming* facilitates testing is that it reduces the testing surface area.
 
 ---
 
-As a general rule, to facilitate testing, make as much of your program functional as possible.
+As a general rule, to make your application more testable, write as much of your program functional as possible.
 
 > **"Imperative shell, functional core"**
 -- *Gary Bernhardt, Boundaries, 2012*
@@ -189,7 +191,7 @@ As a general rule, to facilitate testing, make as much of your program functiona
 
 * "Composition over inheritance"
 * [Object composition - Wikipedia](https://en.wikipedia.org/wiki/Object_composition): "Combine simple objects or data types into more complex ones"
-* For example, in a twitter client, instead of having a `UIViewController` download and parse an API call itself, it could have a `TweetGetter` that performs that work. Then `TweetGetter` could have an `APICaller` and a `ResponseParser`.
+* For example, in a Twitter client, instead of having a `UIViewController` download and parse an API call itself, it could have a `TweetGetter` that performs that work. Then `TweetGetter` could have an `APICaller` and a `ResponseParser`.
 
 ---
 
@@ -289,14 +291,14 @@ let tweetGetter = TweetGetter()
 
 ---
 
-> Reason #1 that composition facilitates testing is by allowing individual components to be loaded separately.
+> Reason #1 that *composition* facilitates testing is by allowing individual components to be loaded separately.
 
 ---
 
 # Dependency Injection
 
-* [Dependency injection - Wikipedia](https://en.wikipedia.org/wiki/Dependency_injection): "Dependency injection is a technique whereby one object supplies the dependencies of another object"
-* [James Shore](http://www.jamesshore.com/Blog/Dependency-Injection-Demystified.html): "'Dependency Injection' is a 25-dollar term for a 5-cent concept"
+* [Dependency injection - Wikipedia](https://en.wikipedia.org/wiki/Dependency_injection): "Dependency injection is a technique whereby one object supplies the dependencies of another object."
+* [James Shore](http://www.jamesshore.com/Blog/Dependency-Injection-Demystified.html): "'Dependency Injection' is a 25-dollar term for a 5-cent concept."
 * For example, instead of the `TweetGetter` initializing the `APICaller` and `ResponseParser` itself, it takes those dependencies as initialization parameters.
 
 ---
@@ -320,6 +322,12 @@ class FlexibleTweetGetter {
     }
 }
 ```
+
+---
+
+# Why use dependency Injection?
+
+It allows dependencies to be mocked.
 
 ---
 
@@ -357,19 +365,19 @@ class TweetGetterTests: XCTestCase {
 
 ---
 
-> Reason #1 that dependency injection facilitates testing is because it allows dependencies to be mocked.
+> Reason #1 that *dependency injection* facilitates testing is that it allows dependencies to be mocked.
 
 ---
 
-> Reason #2 that composition facilitates testing is because it allows dependency injection.
+> Reason #2 that *composition* facilitates testing is that it allows dependency injection.
 
 ---
 
 # Summary
 
-* Functional programming clarifies a classes API, and reduces the testing surface area.
-* Composition makes individual components loadable separately, and faciliates dependency injection.
-* Dependency injection facilitates mocking a classes dependencies.
+* *Functional programming* clarifies a classes API, and reduces the testing surface area.
+* *Composition* makes individual components loadable separately, and faciliates dependency injection.
+* *Dependency injection* allows mocking a classes dependencies.
 
 ---
 
@@ -380,7 +388,7 @@ class TweetGetterTests: XCTestCase {
 
 ---
 
-## Basic Building Block
+Basic Building Block
 
 * Copy a `TestData` folder into the test bundle as a build phase.
 * Create a simple helper function to access the contents of the `TestData` folder.
