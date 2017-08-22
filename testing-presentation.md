@@ -5,6 +5,7 @@
 * Composition
 * Dependency Injection
 * Mock Objects
+* Case Study: WSJ's Barfly
 
 ---
 
@@ -402,7 +403,7 @@ class CatalogUpdaterTests: MockCatalogUpdaterTestCase { }
 
 ---
 
-## High-Level Test Cases
+## At the Top
 
 ``` swift
 class BarflyCatalogUpdateTestCase: TestDataFilesContainerTestCase {
@@ -424,6 +425,7 @@ class BarflyCatalogUpdateTestCase: TestDataFilesContainerTestCase {
 	}
 }
 ```
+
 ---
 
 ## An Example Tests
